@@ -101,3 +101,54 @@ open System
 let parsed, theDate = DateTime.TryParse "03 Dec 2020"
 if parsed then printf $"Day of week is {theDate.DayOfWeek}!"
 ```
+
+### Records
+
+- In language since initial release, defacto way of modelling structured data, compared to C#'s classes.
+- Able to specify names for each value, called _fields_.
+- Shorthand: `type Address = { Line1 : string; Line2 : string }`.
+- Must set all fields on a record when creating them.
+- Records are cheap; if you only have some part of the data in a context, create a different type that better fits the use case.
+- Type inference works on records, but if two are very similar, compiler will default inference to the _most recently defined_ type.
+- In performance critical areas, `mutable` can be declared on a field.
+- Records and Tuples support _structural equality_ by default (compare by contents, not reference).
+- Records are _reference types_, to pass by value add `[<Struct>]` to top of record definition.
+
+*Copy and Update* is used to update a record:
+```
+let me = {
+    FirstName = "Mr"
+    LastName = "Test"
+    Age = 42
+}
+let newMe = {
+    me with
+        Age = 43
+}
+```
+
+#### Anonymous Records
+
+- Skips the formal definition.
+- Compiler doesn't support type inference when used as inputs to functions.
+- No attributes.
+- Difficult to pattern match.
+- Useful for exploration before formal definition.
+- Can inline an anonymous record inside a record definition.
+- Great fit for serialization and deserialization (JSON).
+  - Instead of decorating your types with custom attributes for your serialization framework, simply map your domain types into a structure that maps 1:1 with the target JSON.
+
+```
+let company = {|
+    Name = "My Company"
+    Country = "Aus"
+|}
+```
+
+Can update _and_ add new fields to an anonymous record.
+```
+let companyWithBank = {|
+    company with
+        AccountNumber = 1
+|}
+```
